@@ -101,6 +101,19 @@ Resolvem "um vídeo → uma nota" manualmente, mas **não** fazem ingest em lote
 canais/playlists, nem mantêm a wiki interligada, nem são pensados como base para
 agentes. Esse é o espaço para o projeto.
 
+## 4b. Reaproveitamento (a validar: licença e manutenção não verificadas)
+
+| Camada | Reaproveitar | Observação |
+|---|---|---|
+| Estrutura do cofre + skill do agente | `oh-my-wiki` (dandacompany), `sdyckjq-lab/llm-wiki-skill` | Padrão LLM Wiki pronto p/ Claude Code e Codex; oh-my-wiki já busca transcrição do YouTube para `raw/` |
+| Coleta em lote (canal) | `dparedesi/YTScribe` | CLI Python, arquivo por canal, Markdown + frontmatter |
+| Transcrição sem legenda | `anyscribecli`, `faster-whisper` | Saída em Markdown para Obsidian |
+| Skill de um vídeo | `glebis/claude-skills` (youtube-transcript) | yt-dlp → nota no cofre |
+| Busca | `tobi/qmd` | MCP local |
+
+Código próprio fica restrito à "cola": ingest em lote de canais e playlists com
+deduplicação por `video_id`, esquema de frontmatter/timestamps e regras no `AGENTS.md`.
+
 ## 5. Questões em aberto (decidir antes de desenvolver)
 
 1. Volume: quantos vídeos/canais? (define se basta grep ou se precisa de `qmd`/vetorial)
