@@ -114,6 +114,40 @@ agentes. Esse é o espaço para o projeto.
 Código próprio fica restrito à "cola": ingest em lote de canais e playlists com
 deduplicação por `video_id`, esquema de frontmatter/timestamps e regras no `AGENTS.md`.
 
+## 4c. Formato de entrega: skill instalável via `npx`
+
+- Padrão aberto **Agent Skills**: diretório com `SKILL.md` (frontmatter `name` +
+  `description`) + `scripts/` e `references/` opcionais. Mesmo formato no Claude
+  Code (`~/.claude/skills`) e no Codex (`~/.codex/skills`).
+- Instalação: `npx skills add SamHavocH/ytb-db` (CLI `skills` da Vercel, suporta
+  `-a claude-code -a codex`, `-g` global, `--skill <nome>`). Alternativas:
+  marketplace de plugins do Claude Code e `$skill-installer` no Codex.
+- O repositório vira o pacote: `skills/<nome>/SKILL.md` na raiz do repo.
+
+Esboço:
+
+```
+skills/
+├── youtube-vault-ingest/      # URL/playlist/canal → raw/ + nota em wiki/
+│   ├── SKILL.md
+│   ├── scripts/fetch.py       # yt-dlp + fallback faster-whisper (rodar via `uv run`)
+│   └── references/note-schema.md
+├── youtube-vault-query/       # responder com citações [[nota]] + timestamp
+└── youtube-vault-lint/        # links quebrados, duplicados, órfãs
+templates/AGENTS.md            # copiado para a raiz do cofre no init
+```
+
+Pontos de atenção:
+- **Dependências:** a skill não instala nada sozinha. O `yt-dlp` é Python, então
+  o mais simples é scripts Python com dependências inline (PEP 723) rodando via
+  `uv run`, ou exigir o `yt-dlp` no PATH. Scripts em Node evitariam o Python, mas
+  continuariam chamando o binário `yt-dlp`.
+- **Codex roda sem rede por padrão:** a coleta precisa de aprovação/rede
+  liberada; deixar isso explícito no `SKILL.md`.
+- O LLM do agente faz o trabalho de resumo/ligação de notas; os scripts só fazem
+  a parte determinística (download, parsing, frontmatter, dedupe por `video_id`).
+  Assim não precisa de chave de API própria.
+
 ## 5. Questões em aberto (decidir antes de desenvolver)
 
 1. Volume: quantos vídeos/canais? (define se basta grep ou se precisa de `qmd`/vetorial)
